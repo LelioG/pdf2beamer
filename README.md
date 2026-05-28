@@ -66,7 +66,7 @@ Model files are local assets and should not be committed. Store them under
 Install the `models` extra, which includes Hugging Face download tooling:
 
 ```bash
-pip install -e ".[pdf,docling,latex,models]"
+pip install -e ".[pdf,docling,models]"
 ```
 
 If your Hugging Face account needs access to a model, authenticate once:
