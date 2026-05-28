@@ -59,7 +59,56 @@ Expected local files, auto-detected by `--real-models` when present:
 You can override paths with `--model`, `--embedding`, or `--reranker`.
 
 Model files are local assets and should not be committed. Store them under
-`models/`; `.gitignore` excludes common model-weight formats.
+`models/`; `.gitignore` excludes `models/` and common model-weight formats.
+
+### Download Models From Hugging Face
+
+Install the Hugging Face CLI, or use the `models` extra which includes it:
+
+```bash
+pip install -U "huggingface_hub[cli]"
+# or, for this project environment:
+pip install -e ".[pdf,models]"
+```
+
+If your Hugging Face account needs access to a model, authenticate once:
+
+```bash
+hf auth login
+```
+
+Download the expected local model layout:
+
+```bash
+mkdir -p models/nemotron-3-nano-4b-gguf \
+  models/Qwen3-Embedding-0.6B \
+  models/Qwen3-Reranker-0.6B
+
+hf download nvidia/NVIDIA-Nemotron-3-Nano-4B-GGUF \
+  NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf \
+  --local-dir models/nemotron-3-nano-4b-gguf
+
+hf download Qwen/Qwen3-Embedding-0.6B \
+  --local-dir models/Qwen3-Embedding-0.6B
+
+hf download Qwen/Qwen3-Reranker-0.6B \
+  --local-dir models/Qwen3-Reranker-0.6B
+```
+
+Quick local check:
+
+```bash
+test -f models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf
+test -d models/Qwen3-Embedding-0.6B
+test -d models/Qwen3-Reranker-0.6B
+git check-ignore -v models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf
+```
+
+Then run with real local models:
+
+```bash
+uv run --extra pdf --extra models pdf2beamer generate paper.pdf --real-models
+```
 
 Fake-model command for lightweight local development:
 
@@ -114,3 +163,5 @@ Disable Instructor and use llama.cpp response format fallback:
 ```bash
 pdf2beamer generate paper.pdf --real-models --no-instructor --output out/
 ```
+13. `12_quality_report.json` - synthese qualite finale.
+14. `assets/` - images extraites du PDF et reutilisables dans les slides.
