@@ -3,11 +3,10 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from pdf2beamer.cli import app
-
 import pdf2beamer
 from pdf2beamer import PipelineConfig, create_embedder, create_generator, create_reranker
 from pdf2beamer.beamer import BeamerRenderer
+from pdf2beamer.cli import app
 from pdf2beamer.errors import InvalidModelConfigurationError
 from pdf2beamer.ir import Slide, SlideBullet, SlideIR
 from pdf2beamer.llm import FakeGenerator
@@ -60,7 +59,9 @@ def test_beamer_renderer_writes_main_tex(tmp_path: Path) -> None:
                 title="Method",
                 main_message="The method is grounded.",
                 layout="bullets",
-                bullets=[SlideBullet(text="A compact claim with evidence.", source_ids=["chunk_1"])],
+                bullets=[
+                    SlideBullet(text="A compact claim with evidence.", source_ids=["chunk_1"])
+                ],
                 source_ids=["chunk_1"],
             ),
         ],
@@ -131,7 +132,9 @@ def test_source_has_no_paper_specific_scoring_terms() -> None:
         "input unification",
         "vml",
     }
-    source_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in Path("src").rglob("*.py"))
+    source_text = "\n".join(
+        path.read_text(encoding="utf-8").lower() for path in Path("src").rglob("*.py")
+    )
 
     assert not forbidden & set(term for term in forbidden if term in source_text)
 
@@ -260,6 +263,7 @@ def test_visual_selector_uses_relevant_non_duplicate_figures(tmp_path: Path) -> 
     assert selected.slides[1].visuals[0].id == "fig_results"
     assert selected.slides[0].visuals[0].id != selected.slides[1].visuals[0].id
 
+
 def test_fallback_evidence_points_are_not_cut_mid_clause() -> None:
     from pdf2beamer.planning.slide_generator import _evidence_points
 
@@ -272,6 +276,7 @@ def test_fallback_evidence_points_are_not_cut_mid_clause() -> None:
     assert all(len(point) <= 90 for point in points)
     assert not any(point.endswith(("more", "only", "not", "across", "and")) for point in points)
     assert not any("resolutionsand" in point for point in points)
+
 
 def test_polish_slide_removes_orphan_table_and_figure_references() -> None:
     from pdf2beamer.ir import ArgumentGraph
@@ -297,4 +302,3 @@ def test_polish_slide_removes_orphan_table_and_figure_references() -> None:
     assert "Effect of Input Resolution" in texts
     assert "Operating at raw resolution yields much better results" in texts
     assert not any("Table 1" in text or "Figure 3" in text for text in texts)
-
