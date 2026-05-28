@@ -15,9 +15,24 @@ authors = [
 dependencies = [
   "pydantic>=2.7,<3",
   "typer>=0.12,<1",
-  "docling>=2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "ruff>=0.5,<1",
+]
+pdf = [
   "pymupdf>=1.24,<2",
+]
+docling = [
+  "docling>=2,<3",
+]
+latex = [
   "latexmk",
+]
+models = [
+  "huggingface-hub[cli]>=0.30",
   "torch>=2.6",
   "transformers>=4.51.0",
   "accelerate",
@@ -25,12 +40,6 @@ dependencies = [
   "llama-cpp-python",
   "instructor>=1.7",
   "numpy>=1.26,<3",
-]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=8,<9",
-  "ruff>=0.5,<1",
 ]
 
 [project.scripts]
