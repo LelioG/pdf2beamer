@@ -114,20 +114,3 @@ Disable Instructor and use llama.cpp response format fallback:
 ```bash
 pdf2beamer generate paper.pdf --real-models --no-instructor --output out/
 ```
-
-
-
-1. `00_pdf_diagnostics.json` - verifie que le PDF a du texte exploitable et liste les avertissements.
-2. `01_pymupdf_extraction.json` - extraction native: pages, blocs de texte, images, bounding boxes.
-3. `02_docling_logical_extraction_fallback.json` - extraction logique au format Docling. 
-4. `03_paper_ir.json` - representation fusionnee du papier: metadata, sections, paragraphes, figures, tables.
-5. `04_chunks.json` - decoupage de `PaperIR` en morceaux recuperables.
-6. `05_embedding_index.json` - index vectoriel local des chunks.
-7. `06_retrieved_contexts.json` - contextes selectionnes pour probleme, contribution, methode, resultats, limites, conclusion.
-8. `07_argument_graph.json` - graphe des claims: probleme, contribution, methode, resultats, takeaway.
-9. `08_deck_plan.json` - plan de presentation: roles des slides, objectifs, evidences ciblees.
-10. `09_slide_ir.json` - contenu structure des slides avant rendu LaTeX.
-11. `10_validation_report.json` - validation densite, grounding, figures et LaTeX.
-12. `11_main.tex` - source Beamer genere.
-13. `12_quality_report.json` - synthese qualite finale.
-14. `assets/` - images extraites du PDF et reutilisables dans les slides.
