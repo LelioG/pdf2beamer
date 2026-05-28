@@ -17,6 +17,7 @@ The package defines strict Pydantic v2 data models and keeps real Docling, PyMuP
 <p align="center">
   <img src="assets/pdf2beamer-demo.gif" alt="pdf2beamer CLI demo" width="800">
 </p>
+
 ## Constraints
 
 - No external API calls.
