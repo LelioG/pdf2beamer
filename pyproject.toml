@@ -28,9 +28,6 @@ pdf = [
 docling = [
   "docling>=2,<3",
 ]
-latex = [
-  "latexmk",
-]
 models = [
   "huggingface-hub>=0.30",
   "torch>=2.6",
