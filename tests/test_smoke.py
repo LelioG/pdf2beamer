@@ -104,7 +104,7 @@ def test_cli_generate_passes_minimal_options(tmp_path: Path, monkeypatch) -> Non
         app,
         [
             "generate",
-            "relayformer.pdf",
+            "paper.pdf",
             "--output",
             str(tmp_path / "out"),
             "--duration",
@@ -116,7 +116,185 @@ def test_cli_generate_passes_minimal_options(tmp_path: Path, monkeypatch) -> Non
     )
 
     assert result.exit_code == 0
-    assert captured["pdf_path"] == Path("relayformer.pdf")
+    assert captured["pdf_path"] == Path("paper.pdf")
     assert captured["config"].duration_minutes == 7
     assert captured["config"].max_slides == 4
     assert captured["config"].compile_pdf is False
+    assert captured["config"].fail_on_error is False
+
+
+def test_source_has_no_paper_specific_scoring_terms() -> None:
+    forbidden = {
+        "relayformer",
+        "glra",
+        "global-local",
+        "input unification",
+        "vml",
+    }
+    source_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in Path("src").rglob("*.py"))
+
+    assert not forbidden & set(term for term in forbidden if term in source_text)
+
+
+def test_pipeline_raises_unexpected_errors_by_default(tmp_path: Path, monkeypatch) -> None:
+    from pdf2beamer.pipeline import PdfToBeamerPipeline
+
+    def boom(path):
+        raise RuntimeError("unexpected bug")
+
+    monkeypatch.setattr("pdf2beamer.pipeline.diagnose_pdf", boom)
+
+    with pytest.raises(RuntimeError, match="unexpected bug"):
+        PdfToBeamerPipeline(PipelineConfig()).generate("paper.pdf", tmp_path / "out")
+
+
+def test_visual_selector_uses_relevant_non_duplicate_figures(tmp_path: Path) -> None:
+    from pdf2beamer.fusion.source_map import make_source_ref
+    from pdf2beamer.ingest.models import BoundingBox
+    from pdf2beamer.ir import FigureIR, PaperIR, PaperMetadata, SectionIR
+    from pdf2beamer.planning.visual_selector import attach_relevant_visuals
+    from pdf2beamer.retrieval import RerankResult
+
+    figure_a = tmp_path / "method_a.png"
+    figure_b = tmp_path / "method_b_duplicate.png"
+    figure_c = tmp_path / "results.png"
+    figure_a.write_bytes(b"same image bytes")
+    figure_b.write_bytes(b"same image bytes")
+    figure_c.write_bytes(b"different result image")
+    source = make_source_ref(page_index=1, confidence=0.8)
+    paper = PaperIR(
+        metadata=PaperMetadata(title="Paper", authors=[], page_count=4, pdf_path=Path("paper.pdf")),
+        sections=[
+            SectionIR(
+                id="sec_method",
+                title="Method",
+                level=1,
+                source=source,
+                confidence=0.8,
+            ),
+            SectionIR(
+                id="sec_results",
+                title="Results",
+                level=1,
+                source=make_source_ref(page_index=3, confidence=0.8),
+                confidence=0.8,
+            ),
+        ],
+        figures=[
+            FigureIR(
+                id="fig_method_a",
+                path=figure_a,
+                caption="Method architecture overview and model pipeline",
+                page_index=1,
+                bbox=BoundingBox(x0=0, y0=0, x1=100, y1=100),
+                linked_section_id="sec_method",
+                source=source,
+                confidence=0.9,
+            ),
+            FigureIR(
+                id="fig_method_b",
+                path=figure_b,
+                caption="Method architecture overview and model pipeline",
+                page_index=1,
+                linked_section_id="sec_method",
+                source=source,
+                confidence=0.9,
+            ),
+            FigureIR(
+                id="fig_results",
+                path=figure_c,
+                caption="Results comparison across benchmark datasets",
+                page_index=3,
+                linked_section_id="sec_results",
+                source=make_source_ref(page_index=3, confidence=0.8),
+                confidence=0.9,
+            ),
+        ],
+    )
+    slides = SlideIR(
+        slides=[
+            Slide(
+                id="slide_01",
+                role="method",
+                title="Method Overview",
+                main_message="The model pipeline is structured.",
+                layout="bullets",
+                bullets=[SlideBullet(text="The architecture uses a clear method pipeline.")],
+            ),
+            Slide(
+                id="slide_02",
+                role="results",
+                title="Results",
+                main_message="The benchmark comparison improves performance.",
+                layout="bullets",
+                bullets=[SlideBullet(text="Results compare performance across benchmarks.")],
+            ),
+        ],
+    )
+    contexts = [
+        RerankResult(
+            chunk_id="c_method",
+            text="method architecture model pipeline",
+            retrieval_score=1.0,
+            rerank_score=1.0,
+            combined_score=1.0,
+            source_pages=[1],
+            section_id="sec_method",
+            chunk_type="paragraph",
+        ),
+        RerankResult(
+            chunk_id="c_results",
+            text="results benchmark comparison performance",
+            retrieval_score=1.0,
+            rerank_score=1.0,
+            combined_score=1.0,
+            source_pages=[3],
+            section_id="sec_results",
+            chunk_type="paragraph",
+        ),
+    ]
+
+    selected = attach_relevant_visuals(slides, paper, contexts)
+
+    assert selected.slides[0].visuals[0].id == "fig_method_a"
+    assert selected.slides[1].visuals[0].id == "fig_results"
+    assert selected.slides[0].visuals[0].id != selected.slides[1].visuals[0].id
+
+def test_fallback_evidence_points_are_not_cut_mid_clause() -> None:
+    from pdf2beamer.planning.slide_generator import _evidence_points
+
+    points = _evidence_points(
+        "This design allows the model to adapt seamlessly to arbitrary input resolutionsand "
+        "process visual evidence efficiently across benchmarks."
+    )
+
+    assert points
+    assert all(len(point) <= 90 for point in points)
+    assert not any(point.endswith(("more", "only", "not", "across", "and")) for point in points)
+    assert not any("resolutionsand" in point for point in points)
+
+def test_polish_slide_removes_orphan_table_and_figure_references() -> None:
+    from pdf2beamer.ir import ArgumentGraph
+    from pdf2beamer.planning.slide_generator import _polish_slide
+
+    slide = Slide(
+        id="slide_01",
+        role="results",
+        title="Results",
+        main_message="Results",
+        layout="bullets",
+        bullets=[
+            SlideBullet(text="Effect of Input Resolution As shown in Table 2"),
+            SlideBullet(text="The corresponding results are presented in Table 1"),
+            SlideBullet(text="Figure 3 shows qualitative examples from the evaluation"),
+            SlideBullet(text="Operating at raw resolution yields much better results"),
+        ],
+    )
+
+    polished = _polish_slide(slide, ArgumentGraph(paper_title="Paper"))
+    texts = [bullet.text for bullet in polished.bullets]
+
+    assert "Effect of Input Resolution" in texts
+    assert "Operating at raw resolution yields much better results" in texts
+    assert not any("Table 1" in text or "Figure 3" in text for text in texts)
+
