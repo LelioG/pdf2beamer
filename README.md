@@ -14,7 +14,9 @@ PDF -> PaperIR -> ArgumentGraph -> DeckPlan -> SlideIR -> Beamer
 ```
 
 The package defines strict Pydantic v2 data models and keeps real Docling, PyMuPDF, Nemotron generation, validation, rendering, and compilation behind local integration points.
-
+<p align="center">
+  <img src="assets/pdf2beamer-demo.gif" alt="pdf2beamer CLI demo" width="800">
+</p>
 ## Constraints
 
 - No external API calls.
