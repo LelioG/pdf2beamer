@@ -7,7 +7,7 @@ name = "pdf2beamer"
 version = "0.1.0"
 description = "Local-first conversion of native scientific PDFs into editable Beamer decks."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
   { name = "pdf2beamer contributors" }
