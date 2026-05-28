@@ -45,6 +45,11 @@ models = [
 [project.scripts]
 pdf2beamer = "pdf2beamer.cli:app"
 
+[project.urls]
+Homepage = "https://github.com/LelioG/pdf2beamer"
+Repository = "https://github.com/LelioG/pdf2beamer"
+Issues = "https://github.com/LelioG/pdf2beamer/issues"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/pdf2beamer"]
 
