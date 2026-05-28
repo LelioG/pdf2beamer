@@ -1,5 +1,9 @@
 # pdf2beamer
 
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&width=750&lines=Convert+scientific+PDFs+into+Beamer+presentations;Local-first+PDF+to+PaperIR+to+SlideIR+to+Beamer;Inspectable+and+deterministic+slide+generation" alt="Typing SVG" />
+</p>
+
 `pdf2beamer` is a local-first Python package for converting native scientific
 PDF papers into editable, compilable Beamer presentations.
 
