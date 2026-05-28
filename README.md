@@ -163,5 +163,3 @@ Disable Instructor and use llama.cpp response format fallback:
 ```bash
 pdf2beamer generate paper.pdf --real-models --no-instructor --output out/
 ```
-13. `12_quality_report.json` - synthese qualite finale.
-14. `assets/` - images extraites du PDF et reutilisables dans les slides.
