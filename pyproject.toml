@@ -32,7 +32,7 @@ latex = [
   "latexmk",
 ]
 models = [
-  "huggingface-hub[cli]>=0.30",
+  "huggingface-hub>=0.30",
   "torch>=2.6",
   "transformers>=4.51.0",
   "accelerate",
