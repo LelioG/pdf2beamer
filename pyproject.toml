@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdf2beamer"
+version = "0.1.0"
+description = "Local-first conversion of native scientific PDFs into editable Beamer decks."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "pdf2beamer contributors" }
+]
+dependencies = [
+  "pydantic>=2.7,<3",
+  "typer>=0.12,<1",
+  "docling>=2,<3",
+  "pymupdf>=1.24,<2",
+  "latexmk",
+  "torch>=2.6",
+  "transformers>=4.51.0",
+  "accelerate",
+  "sentence-transformers>=2.7.0",
+  "llama-cpp-python",
+  "instructor>=1.7",
+  "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "ruff>=0.5,<1",
+]
+
+[project.scripts]
+pdf2beamer = "pdf2beamer.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdf2beamer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
