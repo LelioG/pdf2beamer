@@ -10,7 +10,7 @@ from pdf2beamer.model_factory import (
     _NEMOTRON_GGUF_DIR,
 )
 
-_NEMOTRON_FILENAME = "NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf"
+_NEMOTRON_FILENAME = "NVIDIA-Nemotron3-Nano-4B-Q4_K_M.gguf"
 
 
 class DownloadFn(Protocol):
