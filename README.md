@@ -122,10 +122,10 @@ hf download Qwen/Qwen3-Reranker-0.6B \
 Quick local check:
 
 ```bash
-test -f models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf
+test -f models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron3-Nano-4B-Q4_K_M.gguf
 test -d models/Qwen3-Embedding-0.6B
 test -d models/Qwen3-Reranker-0.6B
-git check-ignore -v models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron-3-Nano-4B-Q4_K_M.gguf
+git check-ignore -v models/nemotron-3-nano-4b-gguf/NVIDIA-Nemotron-3Nano-4B-Q4_K_M.gguf
 ```
 
 Then run with real local models. Use `--no-compile` if you only want the editable `out/main.tex` file:
