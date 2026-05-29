@@ -18,12 +18,7 @@ The package defines strict Pydantic v2 data models and keeps real Docling, PyMuP
   <img src="assets/pdf2beamer-demo.gif" alt="pdf2beamer CLI demo" width="800">
 </p>
 
-## Installation
 
-You can install `pdf2beamer` directly with pip:
-
-```bash
-pip install pdf2beamer
 ## Constraints
 
 - No external API calls.
@@ -56,10 +51,22 @@ Real model and PDF backends are optional. The base package imports without
 installing heavy extraction or model dependencies, and the library never
 downloads model files at runtime.
 
-Install the extras you need:
+Install the base package:
 
 ```bash
-pip install -e ".[pdf,docling,latex,models]"
+pip install pdf2beamer
+```
+
+With local model support:
+
+```bash
+pip install "pdf2beamer[models]"
+```
+
+Download default models into `./models/`:
+
+```bash
+pdf2beamer download-models .
 ```
 
 Expected local files, auto-detected by `--real-models` when present:
@@ -75,19 +82,19 @@ Model files are local assets and should not be committed. Store them under
 
 ### Download Models From Hugging Face
 
-Install the `models` extra, which includes Hugging Face download tooling:
-
-```bash
-pip install -e ".[pdf,docling,models]"
-```
-
-If your Hugging Face account needs access to a model, authenticate once:
+The `models` extra includes Hugging Face download tooling. If your Hugging Face account needs access to a model, authenticate once:
 
 ```bash
 hf auth login
 ```
 
 Download the expected local model layout:
+
+```bash
+pdf2beamer download-models .
+```
+
+Equivalent manual Hugging Face commands:
 
 ```bash
 mkdir -p models/nemotron-3-nano-4b-gguf \
@@ -211,5 +218,3 @@ Disable Instructor and use llama.cpp response format fallback:
 ```bash
 pdf2beamer generate paper.pdf --real-models --no-instructor --output out/
 ```
-13. `12_quality_report.json` - synthese qualite finale.
-14. `assets/` - images extraites du PDF et reutilisables dans les slides.
