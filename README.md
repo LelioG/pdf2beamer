@@ -57,10 +57,16 @@ Install the base package:
 pip install pdf2beamer
 ```
 
-With local model support:
+With local model download and inference support only:
 
 ```bash
 pip install "pdf2beamer[models]"
+```
+
+With the full local pipeline for native PDFs and real local models:
+
+```bash
+pip install "pdf2beamer[models,pdf,docling]"
 ```
 
 Download default models into `./models/`:
@@ -79,6 +85,7 @@ You can override paths with `--model`, `--embedding`, or `--reranker`.
 
 Model files are local assets and should not be committed. Store them under
 `models/`; `.gitignore` excludes `models/` and common model-weight formats.
+
 
 ### Download Models From Hugging Face
 
